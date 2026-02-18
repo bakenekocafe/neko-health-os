@@ -391,14 +391,16 @@ const App = {
           </div>
         `;
       }).join('');
-      // 確認済みのレンダリング（次アクション付き）
-      const renderAcknowledgedList = (notifs) => {
-        if (notifs.length === 0) return '<p style="color:var(--text-muted);font-size:var(--text-sm)">なし</p>';
-        return notifs.map(n => {
-          const info = typeLabels[n.type] || { icon: '🔔', label: n.type, severity: 'info' };
-          const catName = n.data?.cat_name || '';
-          const catLink = n.cat_id ? `<a href="#/cat/${n.cat_id}" style="color:var(--accent-primary);text-decoration:none;font-weight:var(--font-semibold)">${Utils.escapeHtml(catName)}</a>` : '';
-          return `
+    };
+
+    // 確認済みのレンダリング（次アクション付き）
+    const renderAcknowledgedList = (notifs) => {
+      if (notifs.length === 0) return '<p style="color:var(--text-muted);font-size:var(--text-sm)">なし</p>';
+      return notifs.map(n => {
+        const info = typeLabels[n.type] || { icon: '🔔', label: n.type, severity: 'info' };
+        const catName = n.data?.cat_name || '';
+        const catLink = n.cat_id ? `<a href="#/cat/${n.cat_id}" style="color:var(--accent-primary);text-decoration:none;font-weight:var(--font-semibold)">${Utils.escapeHtml(catName)}</a>` : '';
+        return `
           <div class="notification-item" style="flex-direction:column;align-items:stretch;gap:var(--space-3);padding:var(--space-5);border-left:3px solid var(--color-${info.severity})">
             <div style="display:flex;align-items:center;gap:var(--space-3)">
               <div class="notif-icon ${info.severity}" style="flex-shrink:0">${info.icon}</div>
@@ -424,10 +426,10 @@ const App = {
             </div>
           </div>
         `;
-        }).join('');
-      };
+      }).join('');
+    };
 
-      container.innerHTML = `
+    container.innerHTML = `
       <div class="page-header">
         <h1 class="page-title">🔔 通知管理</h1>
         <p class="page-subtitle">確認済み = 次アクションを記録して対応中 / 解決済み = 対応完了（クローズ）</p>
@@ -455,12 +457,12 @@ const App = {
       ${renderNotifList(resolved.slice(0, 20))}` : ''}
     `;
 
-      // Acknowledge button → open modal for next action
-      container.querySelectorAll('.btn-ack-notif').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const notifId = btn.dataset.id;
+    // Acknowledge button → open modal for next action
+    container.querySelectorAll('.btn-ack-notif').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const notifId = btn.dataset.id;
 
-          const content = `
+        const content = `
           <div class="form-group">
             <label>次アクション <span style="color:var(--color-danger)">*</span></label>
             <textarea id="ack-next-action" placeholder="例: 明日の朝に体重計測を実施する&#10;例: 獣医に連絡し、来週中に受診予約を入れる&#10;例: 飲水量の記録を開始する" required style="min-height:100px"></textarea>
@@ -468,48 +470,48 @@ const App = {
           </div>
         `;
 
-          const footerEl = document.createElement('div');
-          footerEl.style.display = 'flex';
-          footerEl.style.gap = '0.75rem';
-          footerEl.style.justifyContent = 'flex-end';
+        const footerEl = document.createElement('div');
+        footerEl.style.display = 'flex';
+        footerEl.style.gap = '0.75rem';
+        footerEl.style.justifyContent = 'flex-end';
 
-          const cancelBtn = document.createElement('button');
-          cancelBtn.className = 'btn btn-secondary';
-          cancelBtn.textContent = 'キャンセル';
-          cancelBtn.addEventListener('click', () => Modal.close());
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = 'キャンセル';
+        cancelBtn.addEventListener('click', () => Modal.close());
 
-          const saveBtn = document.createElement('button');
-          saveBtn.className = 'btn btn-primary';
-          saveBtn.textContent = '確認済みにする';
-          saveBtn.addEventListener('click', () => {
-            const nextAction = document.getElementById('ack-next-action').value.trim();
-            if (!nextAction) { alert('次アクションは必須です'); return; }
-            Notifications.acknowledge(notifId, nextAction);
-            Modal.close();
-            this.renderNotificationsPage(container);
-          });
-
-          footerEl.appendChild(cancelBtn);
-          footerEl.appendChild(saveBtn);
-
-          Modal.show({ title: '👁️ 確認 — 次アクションの記録', content, footer: footerEl });
-        });
-      });
-
-      // Resolve button
-      container.querySelectorAll('.btn-resolve-notif').forEach(btn => {
-        btn.addEventListener('click', () => {
-          Notifications.resolve(btn.dataset.id);
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn btn-primary';
+        saveBtn.textContent = '確認済みにする';
+        saveBtn.addEventListener('click', () => {
+          const nextAction = document.getElementById('ack-next-action').value.trim();
+          if (!nextAction) { alert('次アクションは必須です'); return; }
+          Notifications.acknowledge(notifId, nextAction);
+          Modal.close();
           this.renderNotificationsPage(container);
         });
+
+        footerEl.appendChild(cancelBtn);
+        footerEl.appendChild(saveBtn);
+
+        Modal.show({ title: '👁️ 確認 — 次アクションの記録', content, footer: footerEl });
       });
-    },
+    });
 
-      // ── Settings Page ──
-      renderSettingsPage(container) {
-        const settings = Store.getSettings();
+    // Resolve button
+    container.querySelectorAll('.btn-resolve-notif').forEach(btn => {
+      btn.addEventListener('click', () => {
+        Notifications.resolve(btn.dataset.id);
+        this.renderNotificationsPage(container);
+      });
+    });
+  },
 
-        container.innerHTML = `
+  // ── Settings Page ──
+  renderSettingsPage(container) {
+    const settings = Store.getSettings();
+
+    container.innerHTML = `
       <div class="page-header">
         <h1 class="page-title">⚙️ 設定</h1>
       </div>
@@ -553,60 +555,60 @@ const App = {
       </div>
     `;
 
-        // Drive settings
-        document.getElementById('btn-save-drive-settings').addEventListener('click', () => {
-          Store.saveSettings({
-            driveClientId: document.getElementById('setting-client-id').value.trim(),
-            driveApiKey: document.getElementById('setting-api-key').value.trim()
-          });
-          alert('保存しました。ページを再読み込みして接続を確認してください。');
-        });
+    // Drive settings
+    document.getElementById('btn-save-drive-settings').addEventListener('click', () => {
+      Store.saveSettings({
+        driveClientId: document.getElementById('setting-client-id').value.trim(),
+        driveApiKey: document.getElementById('setting-api-key').value.trim()
+      });
+      alert('保存しました。ページを再読み込みして接続を確認してください。');
+    });
 
-        // Export
-        document.getElementById('btn-export-all').addEventListener('click', () => {
-          const data = Store.exportAll();
-          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `neko-health-os-backup_${Utils.today()}.json`;
-          a.click();
-          URL.revokeObjectURL(url);
-        });
+    // Export
+    document.getElementById('btn-export-all').addEventListener('click', () => {
+      const data = Store.exportAll();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `neko-health-os-backup_${Utils.today()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
 
-        // Import
-        const importFile = document.getElementById('import-file');
-        document.getElementById('btn-import-all').addEventListener('click', () => importFile.click());
-        importFile.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = async (ev) => {
-            try {
-              const data = JSON.parse(ev.target.result);
-              if (confirm('既存データを上書きしてインポートしますか？')) {
-                Store.importAll(data);
-                alert('インポート完了しました');
-                this.showApp();
-              }
-            } catch (err) {
-              alert('無効なJSONファイルです');
-            }
-          };
-          reader.readAsText(file);
-        });
-
-        // Logout
-        document.getElementById('btn-logout').addEventListener('click', () => {
-          if (confirm('ログアウトしますか？')) {
-            DriveAPI.signOut();
-            localStorage.removeItem('neko_user');
-            this.isLoggedIn = false;
-            this.showLogin();
+    // Import
+    const importFile = document.getElementById('import-file');
+    document.getElementById('btn-import-all').addEventListener('click', () => importFile.click());
+    importFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (confirm('既存データを上書きしてインポートしますか？')) {
+            Store.importAll(data);
+            alert('インポート完了しました');
+            this.showApp();
           }
-        });
-      }
-  };
+        } catch (err) {
+          alert('無効なJSONファイルです');
+        }
+      };
+      reader.readAsText(file);
+    });
 
-  // ── Start ──
-  document.addEventListener('DOMContentLoaded', () => App.init());
+    // Logout
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      if (confirm('ログアウトしますか？')) {
+        DriveAPI.signOut();
+        localStorage.removeItem('neko_user');
+        this.isLoggedIn = false;
+        this.showLogin();
+      }
+    });
+  }
+};
+
+// ── Start ──
+document.addEventListener('DOMContentLoaded', () => App.init());
