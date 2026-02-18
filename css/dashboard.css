@@ -1,0 +1,271 @@
+/* ============================================================
+   猫の健康管理OS - Dashboard Styles
+   ============================================================ */
+
+/* ── Dashboard Stats Row ── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+@media (max-width: 1024px) {
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Dashboard Toolbar ── */
+.dashboard-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.search-box {
+    position: relative;
+    max-width: 320px;
+    flex: 1;
+}
+
+.search-box input {
+    padding-left: 40px;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.filter-group {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.filter-btn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    background: var(--bg-glass);
+    border: 1px solid var(--border-subtle);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+    border-color: var(--border-default);
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background: var(--accent-primary-soft);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* ── Cat Cards Grid ── */
+.cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-4);
+}
+
+/* ── Cat Card ── */
+.cat-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.cat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-teal));
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.cat-card:hover {
+    border-color: var(--border-default);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.cat-card:hover::before {
+    opacity: 1;
+}
+
+.cat-card-top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.cat-card-photo {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    border: 2px solid var(--border-default);
+    flex-shrink: 0;
+}
+
+.cat-card-photo-placeholder {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    background: var(--bg-glass);
+    border: 2px solid var(--border-default);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-2xl);
+    flex-shrink: 0;
+}
+
+.cat-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cat-card-name {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cat-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.cat-card-score {
+    flex-shrink: 0;
+}
+
+.cat-card-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.cat-card-detail {
+    text-align: center;
+}
+
+.cat-card-detail-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: var(--space-1);
+}
+
+.cat-card-detail-value {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    font-family: var(--font-mono);
+}
+
+/* ── Score based card border ── */
+.cat-card[data-score-level="critical"] {
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+}
+
+.cat-card[data-score-level="warning"] {
+    border-color: rgba(249, 115, 22, 0.2);
+}
+
+.cat-card[data-score-level="caution"] {
+    border-color: rgba(245, 158, 11, 0.15);
+}
+
+/* ── Active Notifications Panel ── */
+.notification-panel {
+    margin-bottom: var(--space-6);
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-glass);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+    transition: all var(--transition-fast);
+}
+
+.notification-item:hover {
+    background: var(--bg-glass-hover);
+}
+
+.notification-item .notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-lg);
+    flex-shrink: 0;
+}
+
+.notification-item .notif-icon.warning {
+    background: var(--color-warning-soft);
+}
+
+.notification-item .notif-icon.danger {
+    background: var(--color-danger-soft);
+}
+
+.notification-item .notif-icon.info {
+    background: var(--color-info-soft);
+}
+
+.notification-item .notif-content {
+    flex: 1;
+}
+
+.notification-item .notif-time {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}

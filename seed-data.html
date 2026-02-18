@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>サンプルデータ注入</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f23;
+            color: #e2e8f0;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #6366f1;
+        }
+
+        .status {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+
+        .ok {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid #22c55e;
+        }
+
+        .info {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid #6366f1;
+        }
+
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: #4f46e5;
+        }
+
+        a {
+            color: #6366f1;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🐈 サンプルデータ注入ツール</h1>
+    <p>このページを実行すると、猫の健康管理OSに様々なサンプルデータが入力されます。</p>
+    <div id="output"></div>
+    <button onclick="seedData()">🚀 サンプルデータを注入する</button>
+    <br><br>
+    <a href="index.html">← アプリに戻る</a>
+
+    <script>
+        function seedData() {
+            const output = document.getElementById('output');
+            const log = (msg, cls = 'ok') => {
+                output.innerHTML += `<div class="status ${cls}">${msg}</div>`;
+            };
+
+            // --- デモユーザー ---
+            const demoUser = { email: 'demo@neko-health.local', name: 'デモスタッフ' };
+            localStorage.setItem('neko_user', JSON.stringify(demoUser));
+            log('✅ デモユーザーをセット');
+
+            // --- 猫データ (5匹) ---
+            const now = new Date().toISOString();
+            const today = now.split('T')[0];
+
+            const cats = [
+                {
+                    id: 'cat_mike_001',
+                    management_id: 'CAT-001',
+                    microchip_id: '392123456789012',
+                    name: 'ミケ',
+                    photo_base64: '',
+                    feature_memo: '三毛柄。右耳に小さな切り込み。人懐っこい性格。',
+                    sex: 'female',
+                    neutered_status: 'spayed',
+                    birth_date: '2020-05-15',
+                    birth_date_precision: 'exact',
+                    estimated_age_years: null,
+                    fiv_status: 'negative',
+                    felv_status: 'negative',
+                    test_date_fiv: '2024-11-01',
+                    test_date_felv: '2024-11-01',
+                    chronic_conditions: [],
+                    status: 'facility',
+                    created_at: '2025-01-10T09:00:00.000Z'
+                },
+                {
+                    id: 'cat_tora_002',
+                    management_id: 'CAT-002',
+                    microchip_id: '392987654321098',
+                    name: 'トラ',
+                    photo_base64: '',
+                    feature_memo: '茶トラ柄。額にM字模様。やや臆病。',
+                    sex: 'male',
+                    neutered_status: 'neutered',
+                    birth_date: '2012-03-20',
+                    birth_date_precision: 'estimated',
+                    estimated_age_years: null,
+                    fiv_status: 'positive',
+                    felv_status: 'negative',
+                    test_date_fiv: '2024-06-15',
+                    test_date_felv: '2024-06-15',
+                    chronic_conditions: [
+                        { condition_name: '慢性腎臓病', severity_level: 'moderate', diagnosed_at: '2024-01-20', managed_by: 'hospital' }
+                    ],
+                    status: 'facility',
+                    created_at: '2025-01-10T09:05:00.000Z'
+                },
+                {
+                    id: 'cat_kuro_003',
+                    management_id: 'CAT-003',
+                    microchip_id: '',
+                    name: 'クロ',
+                    photo_base64: '',
+                    feature_memo: '全身真っ黒。鼻先だけ小さな白斑。甘えん坊。',
+                    sex: 'male',
+                    neutered_status: 'neutered',
+                    birth_date: null,
+                    birth_date_precision: 'unknown',
+                    estimated_age_years: 3,
+                    fiv_status: 'negative',
+                    felv_status: 'negative',
+                    test_date_fiv: '2025-01-05',
+                    test_date_felv: '2025-01-05',
+                    chronic_conditions: [],
+                    status: 'facility',
+                    created_at: '2025-02-01T10:00:00.000Z'
+                },
+                {
+                    id: 'cat_hana_004',
+                    management_id: 'CAT-004',
+                    microchip_id: '392111222333444',
+                    name: 'ハナ',
+                    photo_base64: '',
+                    feature_memo: '白猫。左目がブルー、右目がゴールドのオッドアイ。',
+                    sex: 'female',
+                    neutered_status: 'spayed',
+                    birth_date: '2018-08-10',
+                    birth_date_precision: 'exact',
+                    estimated_age_years: null,
+                    fiv_status: 'negative',
+                    felv_status: 'positive',
+                    test_date_fiv: '2025-01-20',
+                    test_date_felv: '2025-01-20',
+                    chronic_conditions: [
+                        { condition_name: '甲状腺機能亢進症', severity_level: 'mild', diagnosed_at: '2025-01-25', managed_by: 'hospital' },
+                        { condition_name: '歯肉炎', severity_level: 'moderate', diagnosed_at: '2024-12-10', managed_by: 'inhouse' }
+                    ],
+                    status: 'facility',
+                    created_at: '2025-01-15T11:00:00.000Z'
+                },
+                {
+                    id: 'cat_sora_005',
+                    management_id: 'CAT-005',
+                    microchip_id: '392555666777888',
+                    name: 'ソラ',
+                    photo_base64: '',
+                    feature_memo: 'ロシアンブルー風のグレー。穏やかな性格でトライアル中。',
+                    sex: 'male',
+                    neutered_status: 'neutered',
+                    birth_date: '2022-11-03',
+                    birth_date_precision: 'exact',
+                    estimated_age_years: null,
+                    fiv_status: 'negative',
+                    felv_status: 'negative',
+                    test_date_fiv: '2025-02-01',
+                    test_date_felv: '2025-02-01',
+                    chronic_conditions: [],
+                    status: 'trial',
+                    created_at: '2025-02-05T14:00:00.000Z'
+                }
+            ];
+
+            localStorage.setItem('neko_cats', JSON.stringify(cats));
+            log(`✅ 猫 ${cats.length}匹を登録: ${cats.map(c => c.name).join(', ')}`);
+
+            // --- 体重記録 (records) ---
+            const records = [];
+            const rid = () => Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+
+            // ミケの体重推移 (安定)
+            const mikeWeights = [
+                { days: 28, w: 3.80 }, { days: 21, w: 3.85 }, { days: 14, w: 3.82 },
+                { days: 7, w: 3.78 }, { days: 3, w: 3.80 }, { days: 0, w: 3.83 }
+            ];
+            mikeWeights.forEach(({ days, w }) => {
+                const d = new Date(); d.setDate(d.getDate() - days);
+                records.push({
+                    id: rid(), cat_id: 'cat_mike_001', date: d.toISOString().split('T')[0],
+                    staff_id: 'demo@neko-health.local', weight: w,
+                    visual_scores: [], sos_level: null, sos_note: '',
+                    timestamp: d.toISOString(), created_at: d.toISOString()
+                });
+            });
+
+            // トラの体重推移 (減少傾向 → 腎臓病あり)
+            const toraWeights = [
+                { days: 30, w: 5.20 }, { days: 22, w: 5.10 }, { days: 15, w: 4.95 },
+                { days: 8, w: 4.80 }, { days: 2, w: 4.65 }
+            ];
+            toraWeights.forEach(({ days, w }) => {
+                const d = new Date(); d.setDate(d.getDate() - days);
+                records.push({
+                    id: rid(), cat_id: 'cat_tora_002', date: d.toISOString().split('T')[0],
+                    staff_id: 'demo@neko-health.local', weight: w,
+                    visual_scores: [], sos_level: null, sos_note: '',
+                    timestamp: d.toISOString(), created_at: d.toISOString()
+                });
+            });
+
+            // トラにSOS Lv.2 (最新レコード)
+            const toraSOSDate = new Date(); toraSOSDate.setHours(toraSOSDate.getHours() - 5);
+            records.push({
+                id: rid(), cat_id: 'cat_tora_002', date: today,
+                staff_id: 'demo@neko-health.local', weight: null,
+                visual_scores: [], sos_level: 2, sos_note: '食欲低下が3日続いている。元気がなく、水ばかり飲む。',
+                timestamp: toraSOSDate.toISOString(), created_at: toraSOSDate.toISOString()
+            });
+
+            // クロの体重 (最近計測なし → 10日前が最後)
+            const kuroDate = new Date(); kuroDate.setDate(kuroDate.getDate() - 10);
+            records.push({
+                id: rid(), cat_id: 'cat_kuro_003', date: kuroDate.toISOString().split('T')[0],
+                staff_id: 'demo@neko-health.local', weight: 4.20,
+                visual_scores: [], sos_level: null, sos_note: '',
+                timestamp: kuroDate.toISOString(), created_at: kuroDate.toISOString()
+            });
+
+            // ハナの体重推移 (増加傾向)
+            const hanaWeights = [
+                { days: 25, w: 3.10 }, { days: 18, w: 3.25 }, { days: 11, w: 3.40 },
+                { days: 4, w: 3.55 }, { days: 1, w: 3.60 }
+            ];
+            hanaWeights.forEach(({ days, w }) => {
+                const d = new Date(); d.setDate(d.getDate() - days);
+                records.push({
+                    id: rid(), cat_id: 'cat_hana_004', date: d.toISOString().split('T')[0],
+                    staff_id: 'demo@neko-health.local', weight: w,
+                    visual_scores: [], sos_level: null, sos_note: '',
+                    timestamp: d.toISOString(), created_at: d.toISOString()
+                });
+            });
+
+            // ソラの体重 (1回だけ)
+            const soraDate = new Date(); soraDate.setDate(soraDate.getDate() - 5);
+            records.push({
+                id: rid(), cat_id: 'cat_sora_005', date: soraDate.toISOString().split('T')[0],
+                staff_id: 'demo@neko-health.local', weight: 4.50,
+                visual_scores: [], sos_level: null, sos_note: '',
+                timestamp: soraDate.toISOString(), created_at: soraDate.toISOString()
+            });
+
+            localStorage.setItem('neko_records', JSON.stringify(records));
+            log(`✅ 体重・SOSレコード ${records.length}件を登録`);
+
+            // --- 承認データ (approvals) ---
+            const approvals = [
+                {
+                    id: rid(), cat_id: 'cat_mike_001', type: 'continuation',
+                    confirmed_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    reapproval_cycle_days: 14, approved_by: 'demo@neko-health.local',
+                    care_plan: '標準的な健康管理を継続。週1回の体重計測、毎日の食欲・排泄・活動量の観察を行う。',
+                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: rid(), cat_id: 'cat_tora_002', type: 'modification',
+                    confirmed_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+                    reapproval_cycle_days: 7, approved_by: '代表・山田',
+                    care_plan: '腎臓病ステージ2管理。療法食(腎臓サポート)の継続給餌、週2回の体重計測、毎日の飲水量記録、月1回の血液検査。',
+                    change_summary: '腎臓病ステージ進行に伴い、チェック頻度を14日→7日に短縮。飲水量記録を追加。',
+                    approved_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+                    created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: rid(), cat_id: 'cat_hana_004', type: 'continuation',
+                    confirmed_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+                    reapproval_cycle_days: 30, approved_by: 'demo@neko-health.local',
+                    care_plan: '甲状腺機能亢進症の投薬管理（メルカゾール1日2回）。歯肉炎のため柔らかい食事を提供。週1回の体重計測。',
+                    created_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ];
+
+            localStorage.setItem('neko_approvals', JSON.stringify(approvals));
+            log(`✅ 承認データ ${approvals.length}件を登録（トラ: 期限超過、ハナ: 期限超過）`);
+
+            // --- インシデント ---
+            const incidents = [
+                {
+                    id: 'inc_001', type: '嘔吐', floor_id: '2F-A',
+                    created_by: 'demo@neko-health.local', status: 'active',
+                    suspected_cat_ids: ['cat_tora_002', 'cat_kuro_003'],
+                    evidence_note: '2Fリビングの窓際に嘔吐物を発見。消化不良の可能性あり。トラとクロが周辺にいた。',
+                    created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'inc_002', type: '下痢', floor_id: '1F',
+                    created_by: 'スタッフA', status: 'resolved',
+                    suspected_cat_ids: ['cat_mike_001'],
+                    evidence_note: '1Fトイレ付近で軟便を確認。ミケの可能性。',
+                    resolved_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                    resolved_by: 'demo@neko-health.local',
+                    resolution_type: 'suspected',
+                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ];
+
+            localStorage.setItem('neko_incidents', JSON.stringify(incidents));
+            log(`✅ インシデント ${incidents.length}件を登録（1件アクティブ、1件解決済み）`);
+
+            // --- タイムライン ---
+            const timeline = [];
+            const tlid = () => Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+
+            // 猫の登録イベント
+            cats.forEach(cat => {
+                timeline.push({
+                    id: tlid(), cat_id: cat.id, event_type: 'cat_registered',
+                    is_key_event: true,
+                    data: { cat_name: cat.name, description: '新規個体が登録されました', staff: 'demo@neko-health.local' },
+                    created_at: cat.created_at
+                });
+            });
+
+            // ミケ: ステータス変更なし、安定
+            timeline.push({
+                id: tlid(), cat_id: 'cat_mike_001', event_type: 'approval_continued',
+                is_key_event: false,
+                data: { cat_name: 'ミケ', description: '継続承認が行われました', staff: 'demo@neko-health.local' },
+                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+            });
+
+            // トラ: SOS関連イベント
+            timeline.push({
+                id: tlid(), cat_id: 'cat_tora_002', event_type: 'modification_approved',
+                is_key_event: true,
+                data: { cat_name: 'トラ', description: '指示変更承認: 腎臓病ステージ進行に伴い、チェック頻度を7日に短縮', staff: 'demo@neko-health.local' },
+                created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
+            });
+
+            timeline.push({
+                id: tlid(), cat_id: 'cat_tora_002', event_type: 'sos_lv2',
+                is_key_event: true,
+                data: { cat_name: 'トラ', note: '食欲低下が3日続いている。元気がなく、水ばかり飲む。', description: 'SOS Lv.2 が発動されました', staff: 'demo@neko-health.local' },
+                created_at: toraSOSDate.toISOString()
+            });
+
+            // インシデント関連
+            timeline.push({
+                id: tlid(), cat_id: null, event_type: 'floor_incident_created',
+                is_key_event: true,
+                data: { description: 'フロアインシデント発生: 嘔吐 (2F-A)', incident_id: 'inc_001', suspected_cats: 'トラ, クロ' },
+                created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
+            });
+
+            timeline.push({
+                id: tlid(), cat_id: null, event_type: 'floor_incident_created',
+                is_key_event: true,
+                data: { description: 'フロアインシデント発生: 下痢 (1F)', incident_id: 'inc_002', suspected_cats: 'ミケ' },
+                created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+            });
+
+            timeline.push({
+                id: tlid(), cat_id: null, event_type: 'floor_incident_resolved',
+                is_key_event: true,
+                data: { description: 'フロアインシデント解決: 下痢 (suspected)', incident_id: 'inc_002' },
+                created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+            });
+
+            // 体重記録イベント(一部)
+            mikeWeights.forEach(({ days, w }) => {
+                const d = new Date(); d.setDate(d.getDate() - days);
+                timeline.push({
+                    id: tlid(), cat_id: 'cat_mike_001', event_type: 'weight_recorded',
+                    is_key_event: false,
+                    data: { cat_name: 'ミケ', description: `体重: ${w}kg`, weight: w, staff: 'demo@neko-health.local' },
+                    created_at: d.toISOString()
+                });
+            });
+
+            toraWeights.forEach(({ days, w }) => {
+                const d = new Date(); d.setDate(d.getDate() - days);
+                timeline.push({
+                    id: tlid(), cat_id: 'cat_tora_002', event_type: 'weight_recorded',
+                    is_key_event: false,
+                    data: { cat_name: 'トラ', description: `体重: ${w}kg`, weight: w, staff: 'demo@neko-health.local' },
+                    created_at: d.toISOString()
+                });
+            });
+
+            // ソラのトライアル開始
+            timeline.push({
+                id: tlid(), cat_id: 'cat_sora_005', event_type: 'status_changed',
+                is_key_event: true,
+                data: { cat_name: 'ソラ', description: 'ステータス: 施設内 → 外泊・トライアル', from: 'facility', to: 'trial', staff: 'demo@neko-health.local' },
+                created_at: '2025-02-10T10:00:00.000Z'
+            });
+
+            localStorage.setItem('neko_timeline', JSON.stringify(timeline));
+            log(`✅ タイムラインイベント ${timeline.length}件を登録`);
+
+            // --- 通知 ---
+            const notifications = [
+                {
+                    id: 'notif_001', cat_id: 'cat_tora_002', type: 'sos_lv2',
+                    status: 'active',
+                    data: { level: 2, note: '食欲低下が3日続いている。元気がなく、水ばかり飲む。', cat_name: 'トラ' },
+                    fired_at: toraSOSDate.toISOString(),
+                    created_at: toraSOSDate.toISOString()
+                },
+                {
+                    id: 'notif_002', cat_id: 'cat_kuro_003', type: 'weight_unmeasured',
+                    status: 'active',
+                    data: { days: 10, cat_name: 'クロ' },
+                    fired_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'notif_003', cat_id: 'cat_tora_002', type: 'approval_overdue',
+                    status: 'active',
+                    data: {
+                        days_overdue: 13, cat_name: 'トラ',
+                        approval_type: 'modification',
+                        cycle_days: 7,
+                        approved_by: '代表・山田',
+                        change_summary: '腎臓病ステージ進行に伴い、チェック頻度を14日→7日に短縮。飲水量記録を追加。',
+                        confirmed_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+                        care_plan: '腎臓病ステージ2管理。療法食(腎臓サポート)の継続給餌、週2回の体重計測、毎日の飲水量記録、月1回の血液検査。'
+                    },
+                    fired_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+                    created_at: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'notif_004', cat_id: null, type: 'floor_incident',
+                    status: 'active',
+                    data: { incident_id: 'inc_001', type: '嘔吐', floor_id: '2F-A' },
+                    fired_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
+                    created_at: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'notif_005', cat_id: 'cat_hana_004', type: 'approval_overdue',
+                    status: 'acknowledged',
+                    data: {
+                        days_overdue: 5, cat_name: 'ハナ',
+                        approval_type: 'continuation',
+                        cycle_days: 30,
+                        approved_by: 'demo@neko-health.local',
+                        change_summary: '',
+                        confirmed_at: new Date(Date.now() - 35 * 24 * 60 * 60 * 1000).toISOString(),
+                        care_plan: '甲状腺機能亢進症の投薬管理（メルカゾール1日2回）。歯肉炎のため柔らかい食事を提供。週1回の体重計測。'
+                    },
+                    next_action: '代表に連絡して今週中に継続承認の確認を依頼する。投薬量の見直しも相談予定。',
+                    acknowledged_by: 'demo@neko-health.local',
+                    acknowledged_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                    fired_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: 'notif_006', cat_id: 'cat_mike_001', type: 'floor_incident',
+                    status: 'resolved',
+                    data: { incident_id: 'inc_002', type: '下痢', floor_id: '1F', cat_name: 'ミケ' },
+                    fired_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    resolved_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                    created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ];
+
+            localStorage.setItem('neko_notifications', JSON.stringify(notifications));
+            log(`✅ 通知 ${notifications.length}件を登録（アクティブ4, 確認済み1, 解決済み1）`);
+
+            // --- 完了メッセージ ---
+            log('', 'info');
+            log('🎉 サンプルデータの注入が完了しました！', 'info');
+            log('📊 <a href="index.html">→ アプリを開いて確認する</a>', 'info');
+            log('', 'info');
+            log('📋 登録データ概要:', 'info');
+            log('  🐱 ミケ (CAT-001) — 健康良好、体重安定、承認OK', 'info');
+            log('  🐱 トラ (CAT-002) — FIV+、慢性腎臓病、SOS Lv.2発動中、承認期限超過', 'info');
+            log('  🐱 クロ (CAT-003) — 体重未計測10日（警告）', 'info');
+            log('  🐱 ハナ (CAT-004) — FeLV+、持病2つ、承認期限超過', 'info');
+            log('  🐱 ソラ (CAT-005) — トライアル中（スコア停止）', 'info');
+        }
+    </script>
+</body>
+
+</html>

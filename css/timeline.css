@@ -1,0 +1,260 @@
+/* ============================================================
+   猫の健康管理OS - Timeline Styles
+   ============================================================ */
+
+.timeline-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.timeline-filters {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* ── Timeline List ── */
+.timeline-list {
+    position: relative;
+    padding-left: var(--space-8);
+}
+
+.timeline-list::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-subtle);
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: var(--space-6);
+    opacity: 0;
+    animation: fadeIn var(--transition-base) both;
+}
+
+.timeline-item:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.timeline-item:nth-child(2) {
+    animation-delay: 50ms;
+}
+
+.timeline-item:nth-child(3) {
+    animation-delay: 100ms;
+}
+
+.timeline-item:nth-child(4) {
+    animation-delay: 150ms;
+}
+
+.timeline-item:nth-child(5) {
+    animation-delay: 200ms;
+}
+
+.timeline-item:nth-child(6) {
+    animation-delay: 250ms;
+}
+
+.timeline-item:nth-child(7) {
+    animation-delay: 300ms;
+}
+
+.timeline-item:nth-child(8) {
+    animation-delay: 350ms;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -25px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-strong);
+    z-index: 1;
+}
+
+.timeline-dot.key-event {
+    width: 16px;
+    height: 16px;
+    left: -27px;
+    border-color: var(--accent-primary);
+    background: var(--accent-primary);
+    box-shadow: 0 0 8px var(--accent-primary-glow);
+}
+
+.timeline-dot.danger {
+    border-color: var(--color-danger);
+    background: var(--color-danger);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.timeline-dot.warning {
+    border-color: var(--color-warning);
+    background: var(--color-warning);
+}
+
+.timeline-dot.success {
+    border-color: var(--color-success);
+    background: var(--color-success);
+}
+
+.timeline-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-5);
+    transition: all var(--transition-fast);
+}
+
+.timeline-content:hover {
+    border-color: var(--border-default);
+    box-shadow: var(--shadow-md);
+}
+
+.timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+}
+
+.timeline-event-type {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+}
+
+.timeline-event-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+}
+
+.timeline-timestamp {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+.timeline-body {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: var(--leading-normal);
+}
+
+.timeline-cat-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-weight: var(--font-medium);
+    color: var(--accent-primary);
+    cursor: pointer;
+}
+
+.timeline-cat-link:hover {
+    text-decoration: underline;
+}
+
+/* ── Date Separator ── */
+.timeline-date-separator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin: var(--space-6) 0;
+    padding-left: var(--space-8);
+}
+
+.timeline-date-separator span {
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.timeline-date-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+}
+
+/* ── Incident Styles ── */
+.incident-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+    transition: all var(--transition-fast);
+}
+
+.incident-card.active {
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.05);
+}
+
+.incident-card.resolved {
+    opacity: 0.7;
+}
+
+.incident-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+}
+
+.incident-type {
+    font-weight: var(--font-semibold);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.incident-body {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.incident-suspects {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.suspect-tag {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    background: var(--bg-glass);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    cursor: pointer;
+}
+
+.suspect-tag img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}

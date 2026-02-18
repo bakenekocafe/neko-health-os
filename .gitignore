@@ -1,0 +1,4 @@
+start-server.vbs
+*.log
+.DS_Store
+Thumbs.db

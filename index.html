@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>猫の健康管理OS v2.1</title>
+  <meta name="description" content="猫の健康管理を一元化するシステム。三層アーキテクチャで個体管理、健康スコアリング、通知管理を実現。">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Google Identity Services (OAuth) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Google APIs -->
+  <script src="https://apis.google.com/js/api.js" async defer></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/cat-detail.css">
+  <link rel="stylesheet" href="css/timeline.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐈</text></svg>">
+</head>
+<body>
+  <div id="app">
+    <!-- Loading state -->
+    <div class="loading-overlay" id="initial-loading">
+      <div class="spinner"></div>
+      <p style="color: var(--text-secondary);">読み込み中...</p>
+    </div>
+  </div>
+
+  <!-- Core Modules -->
+  <script src="js/utils.js"></script>
+  <script src="js/drive.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/timeline.js"></script>
+
+  <!-- Components -->
+  <script src="js/components/modal.js"></script>
+  <script src="js/components/dashboard.js"></script>
+  <script src="js/components/cat-form.js"></script>
+  <script src="js/components/cat-detail.js"></script>
+  <script src="js/components/weight.js"></script>
+  <script src="js/components/sos.js"></script>
+  <script src="js/components/incident.js"></script>
+  <script src="js/components/approval.js"></script>
+
+  <!-- App (Router + Init) -->
+  <script src="js/app.js"></script>
+</body>
+</html>
