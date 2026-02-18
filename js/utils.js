@@ -2,7 +2,15 @@
 // 猫の健康管理OS - Utility Functions
 // ============================================================
 
+const STAFF_LIST = ['未指定', '久保川', '平澤', '梶川', '原口', '酒匂', '矢田', '遠藤'];
+
 const Utils = {
+  // ── Staff Dropdown ──
+  staffOptions(selectedValue) {
+    return STAFF_LIST.map(name =>
+      `<option value="${name === '未指定' ? '' : name}"${(selectedValue || '') === (name === '未指定' ? '' : name) ? ' selected' : ''}>${name}</option>`
+    ).join('');
+  },
   // ── ID Generation ──
   generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
@@ -103,9 +111,9 @@ const Utils = {
     const color = this.scoreColor(score);
     return `
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-        <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none"
+        <circle cx="${size / 2}" cy="${size / 2}" r="${radius}" fill="none"
                 stroke="var(--border-subtle)" stroke-width="4" />
-        <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none"
+        <circle cx="${size / 2}" cy="${size / 2}" r="${radius}" fill="none"
                 stroke="${color}" stroke-width="4"
                 stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
                 stroke-linecap="round" style="transition: stroke-dashoffset 0.8s ease;" />

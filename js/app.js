@@ -482,8 +482,10 @@ const App = {
         const content = `
           <div class="form-group">
             <label>対応者名 <span style="color:var(--color-danger)">*</span></label>
-            <input type="text" id="ack-staff-name" placeholder="例: 田中" required>
-            <div class="form-hint">対応するスタッフの名前を入力してください</div>
+            <select id="ack-staff-name" required>
+              ${Utils.staffOptions('')}
+            </select>
+            <div class="form-hint">対応するスタッフを選択してください</div>
           </div>
           <div class="form-group">
             <label>引き継ぎメモ</label>
@@ -540,7 +542,9 @@ const App = {
         const content = `
           <div class="form-group">
             <label>対応者名 <span style="color:var(--color-danger)">*</span></label>
-            <input type="text" id="edit-staff-name" value="${Utils.escapeHtml(currentStaff)}" placeholder="例: 田中" required>
+            <select id="edit-staff-name" required>
+              ${Utils.staffOptions(currentStaff)}
+            </select>
           </div>
           <div class="form-group">
             <label>引き継ぎメモ</label>
