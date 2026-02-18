@@ -3,31 +3,31 @@
 // ============================================================
 
 const CatDetail = {
-    render(container, catId) {
-        const cat = Store.getCat(catId);
-        if (!cat) {
-            container.innerHTML = `<div class="empty-state"><div class="icon">❌</div><h3>猫が見つかりません</h3><a href="#/" class="btn btn-primary mt-4">ダッシュボードに戻る</a></div>`;
-            return;
-        }
+  render(container, catId) {
+    const cat = Store.getCat(catId);
+    if (!cat) {
+      container.innerHTML = `<div class="empty-state"><div class="icon">❌</div><h3>猫が見つかりません</h3><a href="#/" class="btn btn-primary mt-4">ダッシュボードに戻る</a></div>`;
+      return;
+    }
 
-        const score = Scoring.calculateScore(cat);
-        const wBreakdown = Scoring.getWRiskBreakdown(cat);
-        const ageYears = Utils.calculateAge(cat);
-        const latestWeight = Store.getLatestWeight(cat.id);
-        const weightDays = latestWeight ? Utils.daysSince(latestWeight.timestamp) : null;
-        const weightStatus = Utils.weightStatus(weightDays);
-        const approval = Store.getApprovalForCat(cat.id);
-        const approvalOverdue = approval ? Utils.daysSince(approval.confirmed_at) >= approval.reapproval_cycle_days : false;
-        const recentWeights = Store.getRecentWeights(cat.id, 30);
-        const latestRecord = Store.getLatestRecord(cat.id);
+    const score = Scoring.calculateScore(cat);
+    const wBreakdown = Scoring.getWRiskBreakdown(cat);
+    const ageYears = Utils.calculateAge(cat);
+    const latestWeight = Store.getLatestWeight(cat.id);
+    const weightDays = latestWeight ? Utils.daysSince(latestWeight.timestamp) : null;
+    const weightStatus = Utils.weightStatus(weightDays);
+    const approval = Store.getApprovalForCat(cat.id);
+    const approvalOverdue = approval ? Utils.daysSince(approval.confirmed_at) >= approval.reapproval_cycle_days : false;
+    const recentWeights = Store.getRecentWeights(cat.id, 30);
+    const latestRecord = Store.getLatestRecord(cat.id);
 
-        container.innerHTML = `
+    container.innerHTML = `
       <!-- Header -->
       <div class="detail-header animate-fadeIn">
         ${cat.photo_base64
-                ? `<img class="detail-photo" src="${cat.photo_base64}" alt="${Utils.escapeHtml(cat.name)}" id="detail-photo">`
-                : `<div class="detail-photo" id="detail-photo" style="background:var(--bg-glass);display:flex;align-items:center;justify-content:center;font-size:3rem;cursor:pointer">🐱</div>`
-            }
+        ? `<img class="detail-photo" src="${cat.photo_base64}" alt="${Utils.escapeHtml(cat.name)}" id="detail-photo">`
+        : `<div class="detail-photo" id="detail-photo" style="background:var(--bg-glass);display:flex;align-items:center;justify-content:center;font-size:3rem;cursor:pointer">🐱</div>`
+      }
         <div class="detail-info">
           <h1 class="detail-name">${Utils.escapeHtml(cat.name)}</h1>
           <div class="detail-badges">
@@ -46,6 +46,7 @@ const CatDetail = {
         </div>
         <div class="detail-actions">
           <a href="#/cat/${catId}/edit" class="btn btn-secondary">✏️ 編集</a>
+          <button class="btn btn-danger btn-sm" id="btn-delete-cat">🗑️ 削除</button>
           <button class="btn btn-secondary" id="btn-export-audit">📦 監査パック</button>
         </div>
       </div>
@@ -121,6 +122,16 @@ const CatDetail = {
           </div>
         </div>
 
+        <!-- Visual Check Section -->
+        <div class="detail-section">
+          <div class="detail-section-header">
+            <span class="detail-section-title">📋 観察記録</span>
+          </div>
+          <div class="detail-section-body" id="visual-check-section">
+            ${VisualCheck.renderInline(cat.id)}
+          </div>
+        </div>
+
         <!-- Infection Status -->
         <div class="detail-section">
           <div class="detail-section-header">
@@ -168,6 +179,16 @@ const CatDetail = {
           </div>
         </div>
 
+        <!-- Medication Section -->
+        <div class="detail-section">
+          <div class="detail-section-header">
+            <span class="detail-section-title">💊 投薬記録</span>
+          </div>
+          <div class="detail-section-body" id="medication-section">
+            ${Medication.renderInline(cat.id)}
+          </div>
+        </div>
+
         <!-- Approval Section -->
         <div class="detail-section detail-full-width">
           <div class="detail-section-header">
@@ -183,7 +204,7 @@ const CatDetail = {
           <div class="detail-section-header">
             <span class="detail-section-title">📜 タイムライン</span>
             <div class="tabs" id="detail-timeline-tabs">
-              <button class="tab active" data-mode="key">Key Events</button>
+              <button class="tab active" data-mode="key">重要イベント</button>
               <button class="tab" data-mode="all">すべて</button>
             </div>
           </div>
@@ -192,63 +213,69 @@ const CatDetail = {
       </div>
     `;
 
-        // Event bindings
-        this.bindEvents(container, cat, catId);
+    // Event bindings
+    this.bindEvents(container, cat, catId);
 
-        // Initial timeline render
-        this.renderCatTimeline(catId, true);
-    },
+    // Visual check events
+    VisualCheck.initEvents(catId);
 
-    bindEvents(container, cat, catId) {
-        // Photo full-screen
-        const photo = document.getElementById('detail-photo');
-        if (photo) {
-            photo.addEventListener('click', () => {
-                const overlay = document.createElement('div');
-                overlay.className = 'cat-id-overlay';
-                overlay.innerHTML = `
+    // Medication events
+    Medication.initEvents(catId);
+
+    // Initial timeline render
+    this.renderCatTimeline(catId, true);
+  },
+
+  bindEvents(container, cat, catId) {
+    // Photo full-screen
+    const photo = document.getElementById('detail-photo');
+    if (photo) {
+      photo.addEventListener('click', () => {
+        const overlay = document.createElement('div');
+        overlay.className = 'cat-id-overlay';
+        overlay.innerHTML = `
           <div class="cat-id-card">
             ${cat.photo_base64
-                        ? `<img src="${cat.photo_base64}" alt="${Utils.escapeHtml(cat.name)}">`
-                        : `<div style="width:300px;height:300px;border-radius:var(--radius-2xl);background:var(--bg-glass);display:flex;align-items:center;justify-content:center;font-size:8rem;margin:0 auto var(--space-6)">🐱</div>`
-                    }
+            ? `<img src="${cat.photo_base64}" alt="${Utils.escapeHtml(cat.name)}">`
+            : `<div style="width:300px;height:300px;border-radius:var(--radius-2xl);background:var(--bg-glass);display:flex;align-items:center;justify-content:center;font-size:8rem;margin:0 auto var(--space-6)">🐱</div>`
+          }
             <h2>${Utils.escapeHtml(cat.name)}</h2>
             <p>${Utils.escapeHtml(cat.feature_memo || '')}</p>
           </div>
         `;
-                overlay.addEventListener('click', () => overlay.remove());
-                document.body.appendChild(overlay);
-            });
-        }
-
-        // Audit export
-        document.getElementById('btn-export-audit')?.addEventListener('click', () => {
-            const pack = Store.exportAuditPack(catId);
-            if (pack) {
-                const blob = new Blob([JSON.stringify(pack, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `audit_${cat.name}_${Utils.today()}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-            }
-        });
-
-        // Timeline tabs
-        document.getElementById('detail-timeline-tabs')?.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('#detail-timeline-tabs .tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                this.renderCatTimeline(catId, tab.dataset.mode === 'key');
-            });
-        });
-    },
-
-    renderCatTimeline(catId, keyOnly = true) {
-        const tlContainer = document.getElementById('detail-timeline');
-        if (!tlContainer) return;
-        const events = Store.getTimelineForCat(catId, keyOnly).slice(0, 50);
-        Timeline.renderTimeline(events, tlContainer);
+        overlay.addEventListener('click', () => overlay.remove());
+        document.body.appendChild(overlay);
+      });
     }
+
+    // Audit export
+    document.getElementById('btn-export-audit')?.addEventListener('click', () => {
+      const pack = Store.exportAuditPack(catId);
+      if (pack) {
+        const blob = new Blob([JSON.stringify(pack, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `audit_${cat.name}_${Utils.today()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    });
+
+    // Timeline tabs
+    document.getElementById('detail-timeline-tabs')?.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('#detail-timeline-tabs .tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.renderCatTimeline(catId, tab.dataset.mode === 'key');
+      });
+    });
+  },
+
+  renderCatTimeline(catId, keyOnly = true) {
+    const tlContainer = document.getElementById('detail-timeline');
+    if (!tlContainer) return;
+    const events = Store.getTimelineForCat(catId, keyOnly).slice(0, 50);
+    Timeline.renderTimeline(events, tlContainer);
+  }
 };

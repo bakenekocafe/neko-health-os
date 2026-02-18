@@ -109,7 +109,7 @@ const App = {
             <span class="logo-icon">🐈</span>
             <div>
               <div>健康管理OS</div>
-              <div style="font-size:var(--text-xs);color:var(--text-muted);font-weight:normal">v2.1</div>
+              <div style="font-size:var(--text-xs);color:var(--text-muted);font-weight:normal">v2.2</div>
             </div>
           </div>
         </div>
@@ -235,23 +235,34 @@ const App = {
   // ── Timeline Page ──
   renderTimelinePage(container) {
     let mode = 'all';
+    let searchQuery = '';
     container.innerHTML = `
       <div class="page-header">
         <h1 class="page-title">📜 統合タイムライン</h1>
         <p class="page-subtitle">すべてのイベント履歴</p>
       </div>
-      <div class="timeline-toolbar">
+      <div class="timeline-toolbar" style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-4)">
         <div class="tabs" id="timeline-page-tabs">
           <button class="tab active" data-mode="all">すべて</button>
-          <button class="tab" data-mode="key">Key Events のみ</button>
+          <button class="tab" data-mode="key">重要イベントのみ</button>
         </div>
+        <input type="text" id="timeline-search" placeholder="🔍 検索（猫名、イベント種別...）" style="flex:1;min-width:200px;max-width:400px">
       </div>
       <div id="timeline-container"></div>
     `;
 
     const renderTL = () => {
-      const events = Store.getFullTimeline(mode === 'key').slice(0, 100);
-      Timeline.renderTimeline(events, document.getElementById('timeline-container'));
+      let events = Store.getFullTimeline(mode === 'key').slice(0, 200);
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        events = events.filter(e => {
+          const catName = (e.data?.cat_name || '').toLowerCase();
+          const desc = (e.data?.description || '').toLowerCase();
+          const type = (e.event_type || '').toLowerCase();
+          return catName.includes(q) || desc.includes(q) || type.includes(q);
+        });
+      }
+      Timeline.renderTimeline(events.slice(0, 100), document.getElementById('timeline-container'));
     };
 
     renderTL();
@@ -263,6 +274,11 @@ const App = {
         mode = tab.dataset.mode;
         renderTL();
       });
+    });
+
+    document.getElementById('timeline-search')?.addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderTL();
     });
   },
 
@@ -538,6 +554,7 @@ const App = {
           <div style="display:flex;gap:var(--space-4);flex-wrap:wrap">
             <button class="btn btn-secondary" id="btn-export-all">📥 全データエクスポート</button>
             <button class="btn btn-secondary" id="btn-import-all">📤 データインポート</button>
+            <button class="btn btn-secondary" id="btn-print-report">🖨️ レポート印刷</button>
             <input type="file" id="import-file" accept=".json" hidden>
           </div>
           <p class="form-hint mt-4">エクスポートしたJSONファイルは監査パックとしても使用できます</p>
@@ -596,6 +613,48 @@ const App = {
         }
       };
       reader.readAsText(file);
+    });
+
+    // Print report
+    document.getElementById('btn-print-report')?.addEventListener('click', () => {
+      const cats = Store.getCats();
+      const allScores = Scoring.calculateAllScores();
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html><head><title>猫の健康管理OS レポート</title>
+        <style>
+          body { font-family: sans-serif; padding: 20px; color: #333; }
+          h1 { font-size: 1.5em; border-bottom: 2px solid #333; padding-bottom: 8px; }
+          h2 { font-size: 1.1em; margin-top: 20px; }
+          table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+          th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; font-size: 0.85em; }
+          th { background: #f5f5f5; }
+          .score { font-weight: bold; font-size: 1.1em; }
+          .footer { margin-top: 30px; font-size: 0.75em; color: #999; }
+        </style></head><body>
+        <h1>🐈 猫の健康管理OS — レポート</h1>
+        <p>出力日時: ${new Date().toLocaleString('ja-JP')}</p>
+        <p>登録猫数: ${cats.length}</p>
+        <table>
+          <tr><th>名前</th><th>ステータス</th><th>スコア</th><th>W_risk</th><th>年齢</th><th>FIV</th><th>FeLV</th><th>持病</th></tr>
+          ${allScores.map(({ cat, score }) => `
+            <tr>
+              <td>${cat.name}</td>
+              <td>${Utils.statusLabel(cat.status)}</td>
+              <td class="score">${score.S_final ?? '-'}</td>
+              <td>${score.W_risk ?? '-'}</td>
+              <td>${Utils.calculateAge(cat) ?? '-'}歳</td>
+              <td>${cat.fiv_status === 'positive' ? '陽性' : cat.fiv_status === 'negative' ? '陰性' : '-'}</td>
+              <td>${cat.felv_status === 'positive' ? '陽性' : cat.felv_status === 'negative' ? '陰性' : '-'}</td>
+              <td>${(cat.chronic_conditions || []).map(c => c.condition_name).join(', ') || '-'}</td>
+            </tr>
+          `).join('')}
+        </table>
+        <div class="footer">猫の健康管理OS v2.2 — ${DriveAPI.userProfile?.name || 'スタッフ'}</div>
+        </body></html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
     });
 
     // Logout

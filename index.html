@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>猫の健康管理OS v2.1</title>
+  <title>猫の健康管理OS v2.2</title>
   <meta name="description" content="猫の健康管理を一元化するシステム。三層アーキテクチャで個体管理、健康スコアリング、通知管理を実現。">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="manifest" href="manifest.json">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,17 +19,21 @@
   <!-- Google APIs -->
   <script src="https://apis.google.com/js/api.js" async defer></script>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/dashboard.css">
-  <link rel="stylesheet" href="css/cat-detail.css">
-  <link rel="stylesheet" href="css/timeline.css">
+  <!-- Styles (cache-busted) -->
+  <link rel="stylesheet" href="css/variables.css?v=2.2">
+  <link rel="stylesheet" href="css/base.css?v=2.2">
+  <link rel="stylesheet" href="css/components.css?v=2.2">
+  <link rel="stylesheet" href="css/dashboard.css?v=2.2">
+  <link rel="stylesheet" href="css/cat-detail.css?v=2.2">
+  <link rel="stylesheet" href="css/timeline.css?v=2.2">
 
   <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐈</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐈</text></svg>">
+  <link rel="apple-touch-icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐈</text></svg>">
 </head>
+
 <body>
   <div id="app">
     <!-- Loading state -->
@@ -37,24 +44,34 @@
   </div>
 
   <!-- Core Modules -->
-  <script src="js/utils.js"></script>
-  <script src="js/drive.js"></script>
-  <script src="js/store.js"></script>
-  <script src="js/scoring.js"></script>
-  <script src="js/notifications.js"></script>
-  <script src="js/timeline.js"></script>
+  <script src="js/utils.js?v=2.2"></script>
+  <script src="js/drive.js?v=2.2"></script>
+  <script src="js/store.js?v=2.2"></script>
+  <script src="js/scoring.js?v=2.2"></script>
+  <script src="js/notifications.js?v=2.2"></script>
+  <script src="js/timeline.js?v=2.2"></script>
 
   <!-- Components -->
-  <script src="js/components/modal.js"></script>
-  <script src="js/components/dashboard.js"></script>
-  <script src="js/components/cat-form.js"></script>
-  <script src="js/components/cat-detail.js"></script>
-  <script src="js/components/weight.js"></script>
-  <script src="js/components/sos.js"></script>
-  <script src="js/components/incident.js"></script>
-  <script src="js/components/approval.js"></script>
+  <script src="js/components/modal.js?v=2.2"></script>
+  <script src="js/components/dashboard.js?v=2.2"></script>
+  <script src="js/components/cat-form.js?v=2.2"></script>
+  <script src="js/components/cat-detail.js?v=2.2"></script>
+  <script src="js/components/weight.js?v=2.2"></script>
+  <script src="js/components/sos.js?v=2.2"></script>
+  <script src="js/components/incident.js?v=2.2"></script>
+  <script src="js/components/approval.js?v=2.2"></script>
+  <script src="js/components/visual-check.js?v=2.2"></script>
+  <script src="js/components/medication.js?v=2.2"></script>
 
   <!-- App (Router + Init) -->
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=2.2"></script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => { });
+    }
+  </script>
 </body>
+
 </html>
