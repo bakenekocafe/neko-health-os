@@ -400,7 +400,7 @@ const App = {
               </div>
               ${showActions ? `
               <div style="display:flex;gap:var(--space-2);margin-top:var(--space-2)">
-                <button class="btn btn-sm btn-secondary btn-ack-notif" data-id="${n.id}">👁️ 確認済みにする</button>
+                <button class="btn btn-sm btn-secondary btn-ack-notif" data-id="${n.id}">👁️ 確認して対応中</button>
                 <button class="btn btn-sm btn-success btn-resolve-notif" data-id="${n.id}">✅ 解決済みにする</button>
               </div>` : ''}
             </div>
@@ -434,7 +434,7 @@ const App = {
                 <div style="font-size:var(--text-sm);color:var(--text-primary);line-height:1.6">${Utils.escapeHtml(n.next_action || '(未記入)')}</div>
               </div>
               <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-2)">
-                👁️ 確認者: ${Utils.escapeHtml(n.acknowledged_by || '')} / ${n.acknowledged_at ? Utils.formatRelative(n.acknowledged_at) : ''}
+                👁️ 対応者: ${Utils.escapeHtml(n.acknowledged_by || '')} / ${n.acknowledged_at ? Utils.formatRelative(n.acknowledged_at) : ''}
               </div>
               <div style="display:flex;gap:var(--space-2)">
                 <button class="btn btn-sm btn-success btn-resolve-notif" data-id="${n.id}">✅ 解決済みにする</button>
@@ -480,6 +480,11 @@ const App = {
 
         const content = `
           <div class="form-group">
+            <label>対応者名 <span style="color:var(--color-danger)">*</span></label>
+            <input type="text" id="ack-staff-name" placeholder="例: 田中" required>
+            <div class="form-hint">対応するスタッフの名前を入力してください</div>
+          </div>
+          <div class="form-group">
             <label>次アクション <span style="color:var(--color-danger)">*</span></label>
             <textarea id="ack-next-action" placeholder="例: 明日の朝に体重計測を実施する&#10;例: 獣医に連絡し、来週中に受診予約を入れる&#10;例: 飲水量の記録を開始する" required style="min-height:100px"></textarea>
             <div class="form-hint">この通知に対して次に何をするかを具体的に記載してください</div>
@@ -498,11 +503,13 @@ const App = {
 
         const saveBtn = document.createElement('button');
         saveBtn.className = 'btn btn-primary';
-        saveBtn.textContent = '確認済みにする';
+        saveBtn.textContent = '確認して対応中';
         saveBtn.addEventListener('click', () => {
           const nextAction = document.getElementById('ack-next-action').value.trim();
+          const staffName = document.getElementById('ack-staff-name').value.trim();
+          if (!staffName) { alert('対応者名は必須です'); return; }
           if (!nextAction) { alert('次アクションは必須です'); return; }
-          Notifications.acknowledge(notifId, nextAction);
+          Notifications.acknowledge(notifId, nextAction, staffName);
           Modal.close();
           this.renderNotificationsPage(container);
         });
