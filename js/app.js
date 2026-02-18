@@ -409,7 +409,7 @@ const App = {
       }).join('');
     };
 
-    // 確認済みのレンダリング（次アクション付き）
+    // 確認済みのレンダリング（引き継ぎメモ付き）
     const renderAcknowledgedList = (notifs) => {
       if (notifs.length === 0) return '<p style="color:var(--text-muted);font-size:var(--text-sm)">なし</p>';
       return notifs.map(n => {
@@ -430,8 +430,8 @@ const App = {
             </div>
             <div style="padding-left:48px">
               <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-md);padding:var(--space-3);margin-bottom:var(--space-2)">
-                <div style="font-size:var(--text-xs);color:var(--color-warning);font-weight:var(--font-semibold);margin-bottom:var(--space-1)">📌 次アクション</div>
-                <div style="font-size:var(--text-sm);color:var(--text-primary);line-height:1.6">${Utils.escapeHtml(n.next_action || '(未記入)')}</div>
+                <div style="font-size:var(--text-xs);color:var(--color-warning);font-weight:var(--font-semibold);margin-bottom:var(--space-1)">📌 引き継ぎメモ</div>
+                <div style="font-size:var(--text-sm);color:var(--text-primary);line-height:1.6">${Utils.escapeHtml(n.next_action || '(指定なし)')}</div>
               </div>
               <div style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-2)">
                 👁️ 対応者: ${Utils.escapeHtml(n.acknowledged_by || '')} / ${n.acknowledged_at ? Utils.formatRelative(n.acknowledged_at) : ''}
@@ -449,13 +449,13 @@ const App = {
     container.innerHTML = `
       <div class="page-header">
         <h1 class="page-title">🔔 通知管理</h1>
-        <p class="page-subtitle">確認済み = 次アクションを記録して対応中 / 解決済み = 対応完了（クローズ）</p>
+        <p class="page-subtitle">確認して対応中 = 引き継ぎメモを記録 / 解決済み = 対応完了（クローズ）</p>
       </div>
 
       <h2 style="font-size:var(--text-lg);font-weight:var(--font-semibold);margin-bottom:var(--space-4)">
         🔴 アクティブ (${active.length})
       </h2>
-      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3)">未対応の通知。確認して次アクションを記録してください。</p>
+      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3)">未対応の通知。確認して引き継ぎメモを記録してください。</p>
       ${renderNotifList(active, true)}
 
       ${acknowledged.length > 0 ? `
@@ -463,7 +463,7 @@ const App = {
       <h2 style="font-size:var(--text-lg);font-weight:var(--font-semibold);margin-bottom:var(--space-4);color:var(--color-warning)">
         📌 確認済み — 対応中 (${acknowledged.length})
       </h2>
-      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3)">次アクションが記録済み。対応完了したら「解決済み」にしてください。</p>
+      <p style="font-size:var(--text-xs);color:var(--text-muted);margin-bottom:var(--space-3)">引き継ぎメモ記録済み。対応完了したら「解決済み」にしてください。</p>
       ${renderAcknowledgedList(acknowledged)}` : ''}
 
       ${resolved.length > 0 ? `
@@ -486,9 +486,9 @@ const App = {
             <div class="form-hint">対応するスタッフの名前を入力してください</div>
           </div>
           <div class="form-group">
-            <label>次アクション <span style="color:var(--color-danger)">*</span></label>
-            <textarea id="ack-next-action" placeholder="例: 明日の朝に体重計測を実施する&#10;例: 獣医に連絡し、来週中に受診予約を入れる&#10;例: 飲水量の記録を開始する" required style="min-height:100px"></textarea>
-            <div class="form-hint">この通知に対して次に何をするかを具体的に記載してください</div>
+            <label>引き継ぎメモ</label>
+            <textarea id="ack-next-action" placeholder="例: 明日の朝に体重計測を実施する&#10;例: 獣医に連絡し、来週中に受診予約を入れる&#10;指定なしの場合は空欄でOK" style="min-height:100px"></textarea>
+            <div class="form-hint">次の担当者への引き継ぎ内容（指定なしでもOK）</div>
           </div>
         `;
 
@@ -509,7 +509,7 @@ const App = {
           const nextAction = document.getElementById('ack-next-action').value.trim();
           const staffName = document.getElementById('ack-staff-name').value.trim();
           if (!staffName) { alert('対応者名は必須です'); return; }
-          if (!nextAction) { alert('次アクションは必須です'); return; }
+          // 引き継ぎメモは任意（指定なしOK）
           Notifications.acknowledge(notifId, nextAction, staffName);
           Modal.close();
           this.renderNotificationsPage(container);
@@ -518,7 +518,7 @@ const App = {
         footerEl.appendChild(cancelBtn);
         footerEl.appendChild(saveBtn);
 
-        Modal.show({ title: '👁️ 確認 — 次アクションの記録', content, footer: footerEl });
+        Modal.show({ title: '👁️ 確認 — 引き継ぎメモの記録', content, footer: footerEl });
       });
     });
 
@@ -543,8 +543,8 @@ const App = {
             <input type="text" id="edit-staff-name" value="${Utils.escapeHtml(currentStaff)}" placeholder="例: 田中" required>
           </div>
           <div class="form-group">
-            <label>次アクション <span style="color:var(--color-danger)">*</span></label>
-            <textarea id="edit-next-action" placeholder="次に何をするかを記載" required style="min-height:100px">${Utils.escapeHtml(currentAction)}</textarea>
+            <label>引き継ぎメモ</label>
+            <textarea id="edit-next-action" placeholder="次の担当者への引き継ぎ内容（指定なしの場合は空欄）" style="min-height:100px">${Utils.escapeHtml(currentAction)}</textarea>
           </div>
         `;
 
@@ -565,7 +565,7 @@ const App = {
           const staffName = document.getElementById('edit-staff-name').value.trim();
           const nextAction = document.getElementById('edit-next-action').value.trim();
           if (!staffName) { alert('対応者名は必須です'); return; }
-          if (!nextAction) { alert('次アクションは必須です'); return; }
+          // 引き継ぎメモは任意（空欄OK）
           Store.update('notifications', notifId, {
             next_action: nextAction,
             acknowledged_by: staffName
@@ -576,7 +576,7 @@ const App = {
 
         footerEl.appendChild(cancelBtn);
         footerEl.appendChild(saveBtn);
-        Modal.show({ title: '✏️ 次アクションの編集', content, footer: footerEl });
+        Modal.show({ title: '✏️ 引き継ぎメモの編集', content, footer: footerEl });
       });
     });
   },

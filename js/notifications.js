@@ -144,7 +144,7 @@ const Notifications = {
         return d.toISOString();
     },
 
-    // ── Acknowledge (with next action) ──
+    // ── Acknowledge (with handover memo) ──
     acknowledge(notificationId, nextAction, acknowledgedBy) {
         Store.update('notifications', notificationId, {
             status: 'acknowledged',
