@@ -437,6 +437,7 @@ const App = {
                 👁️ 対応者: ${Utils.escapeHtml(n.acknowledged_by || '')} / ${n.acknowledged_at ? Utils.formatRelative(n.acknowledged_at) : ''}
               </div>
               <div style="display:flex;gap:var(--space-2)">
+                <button class="btn btn-sm btn-secondary btn-edit-notif" data-id="${n.id}" data-action="${Utils.escapeHtml(n.next_action || '')}" data-staff="${Utils.escapeHtml(n.acknowledged_by || '')}">✏️ 編集</button>
                 <button class="btn btn-sm btn-success btn-resolve-notif" data-id="${n.id}">✅ 解決済みにする</button>
               </div>
             </div>
@@ -526,6 +527,56 @@ const App = {
       btn.addEventListener('click', () => {
         Notifications.resolve(btn.dataset.id);
         this.renderNotificationsPage(container);
+      });
+    });
+
+    // Edit button (for acknowledged notifications)
+    container.querySelectorAll('.btn-edit-notif').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const notifId = btn.dataset.id;
+        const currentAction = btn.dataset.action || '';
+        const currentStaff = btn.dataset.staff || '';
+
+        const content = `
+          <div class="form-group">
+            <label>対応者名 <span style="color:var(--color-danger)">*</span></label>
+            <input type="text" id="edit-staff-name" value="${Utils.escapeHtml(currentStaff)}" placeholder="例: 田中" required>
+          </div>
+          <div class="form-group">
+            <label>次アクション <span style="color:var(--color-danger)">*</span></label>
+            <textarea id="edit-next-action" placeholder="次に何をするかを記載" required style="min-height:100px">${Utils.escapeHtml(currentAction)}</textarea>
+          </div>
+        `;
+
+        const footerEl = document.createElement('div');
+        footerEl.style.display = 'flex';
+        footerEl.style.gap = '0.75rem';
+        footerEl.style.justifyContent = 'flex-end';
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.textContent = 'キャンセル';
+        cancelBtn.addEventListener('click', () => Modal.close());
+
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn btn-primary';
+        saveBtn.textContent = '更新する';
+        saveBtn.addEventListener('click', () => {
+          const staffName = document.getElementById('edit-staff-name').value.trim();
+          const nextAction = document.getElementById('edit-next-action').value.trim();
+          if (!staffName) { alert('対応者名は必須です'); return; }
+          if (!nextAction) { alert('次アクションは必須です'); return; }
+          Store.update('notifications', notifId, {
+            next_action: nextAction,
+            acknowledged_by: staffName
+          });
+          Modal.close();
+          this.renderNotificationsPage(container);
+        });
+
+        footerEl.appendChild(cancelBtn);
+        footerEl.appendChild(saveBtn);
+        Modal.show({ title: '✏️ 次アクションの編集', content, footer: footerEl });
       });
     });
   },
