@@ -6,26 +6,37 @@ const App = {
   isLoggedIn: false,
 
   async init() {
-    // Load settings
-    const settings = JSON.parse(localStorage.getItem('neko_settings') || '{}');
+    try {
+      // Load settings
+      const settings = JSON.parse(localStorage.getItem('neko_settings') || '{}');
 
-    // Configure Drive
-    if (settings.driveClientId && settings.driveApiKey) {
-      DriveAPI.configure(settings.driveClientId, settings.driveApiKey);
-      await DriveAPI.init();
+      // Configure Drive (with timeout protection)
+      if (settings.driveClientId && settings.driveApiKey) {
+        DriveAPI.configure(settings.driveClientId, settings.driveApiKey);
+        try {
+          await Promise.race([
+            DriveAPI.init(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Drive init timeout')), 5000))
+          ]);
+        } catch (e) {
+          console.warn('[App] Drive init skipped:', e.message);
+        }
+      }
+
+      // Init Store
+      await Store.init();
+
+      // Check if we have a logged-in user
+      const savedUser = localStorage.getItem('neko_user');
+      if (savedUser) {
+        DriveAPI.userProfile = JSON.parse(savedUser);
+        this.isLoggedIn = true;
+      }
+    } catch (e) {
+      console.error('[App] Init error:', e);
     }
 
-    // Init Store
-    await Store.init();
-
-    // Check if we have a logged-in user
-    const savedUser = localStorage.getItem('neko_user');
-    if (savedUser) {
-      DriveAPI.userProfile = JSON.parse(savedUser);
-      this.isLoggedIn = true;
-    }
-
-    // Show login or app
+    // Show login or app (always runs, even on error)
     if (this.isLoggedIn) {
       this.showApp();
     } else {
